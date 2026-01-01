@@ -22,7 +22,8 @@
 #define MAX_PAYLOAD 2048
 #define SLOW_MSG_CNT 1
 
-#define SERV_PORT 8090
+
+#define SERV_PORT 10010
 #define SERV_IP "127.0.0.1"
 
 int serv_port = -1;
@@ -64,8 +65,9 @@ int main(int argc, char** argv)
 	servaddr.sin_port = htons(serv_port);	
 	Inet_pton(AF_INET, serv_ip, &servaddr.sin_addr);
 
-	sock_cli_fd = Socket(AF_INET, SOCK_STREAM, 0);
-	Connect(sock_cli_fd, &servaddr, sizeof(servaddr));
+	//sock_cli_fd = Socket(AF_INET, SOCK_STREAM, 0);
+        sock_cli_fd = socket(AF_INET, SOCK_DGRAM, 0);
+	//Connect(sock_cli_fd, &servaddr, sizeof(servaddr));
 
 
 	/* Setup the socket */
@@ -113,10 +115,13 @@ int main(int argc, char** argv)
 		l = (unsigned short) cmsg->len;
 		l2 = htons(l);
 
-		if( write(sock_cli_fd, &l2, sizeof(unsigned short)) < 0)
-			exit_program_err(-1, "write");		
-		if (write(sock_cli_fd, cmsg->data, l) < 0)
-			exit_program_err(-1, "write");
+
+                if (sendto(sock_cli_fd, &l2, sizeof(unsigned short), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
+                    exit_program_err(-1, "sendto");
+
+                if (sendto(sock_cli_fd, cmsg->data, l, 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
+                    exit_program_err(-1, "sendto");
+
 
 		if (count % 100 == 0)
 			printf("wrote %d bytes [msgcnt=%u]\n", ret, count);
