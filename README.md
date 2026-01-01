@@ -47,3 +47,6 @@ iperf3 -c <ip-address-of-pc> -u -b 100M -P 10 -t 180
 ```
 
 Now data should be displayed.
+
+# Attribution
+The log_to_server_2.c script in this repository is adapted from the original work by Lubingxian: [Github Repo](https://github.com/lubingxian/Realtime-processing-for-csitool)
